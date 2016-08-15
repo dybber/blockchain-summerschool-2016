@@ -63,6 +63,6 @@ Solidity
 Solidity example contracts
 --------------------------
  * http://solidity.readthedocs.io/en/latest/solidity-by-example.html
- * https://www.ethereum.org/ethereum
+ * https://www.ethereum.org/token
  * https://www.ethereum.org/crowdsale
  * https://www.ethereum.org/dao
