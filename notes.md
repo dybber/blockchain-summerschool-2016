@@ -41,6 +41,8 @@ Links
 
 Solidity
 --------
+ * https://medium.com/@ConsenSys/a-101-noob-intro-to-programming-smart-contracts-on-ethereum-695d15c1dab4#.6ht60i8gr
+
  * https://learnxinyminutes.com/docs/solidity/
 
  * ```constant``` attribute on functions -- annotate that the function
