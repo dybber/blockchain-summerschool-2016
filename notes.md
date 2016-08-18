@@ -16,6 +16,7 @@ Various links on blockchain tech and limitation
  * http://initc3.org/
  * http://raiden.network/ - Scalable payment network
  * https://digitalasset.com/press/introducing-daml.html - Digital Asset Modeling Language
+ * https://medium.com/@Hibryda/why-solidity-isnt-solid-3341af77fc1c - Why Solidity Isn't Solid
  * https://github.com/HIPERFIT/contracts - HIPERFIT Financial Multi-Party Contracts - and example contracts: https://github.com/HIPERFIT/prototype/tree/master/tests
 
 
@@ -33,15 +34,17 @@ Links
 -----
  * Ethereum whitepaper: https://github.com/ethereum/wiki/wiki/White-Paper
  * Ethereum yellow-paper: http://gavwood.com/paper.pdf
- * Browser IDE for Solidity: http://ethereum.github.io/browser-solidity
+ * Browser IDE for Solidity: http://ethereum.github.io/browser-solidity (alternatively: http://cosmo.to/ or http://ether.camp/)
  * Block Explorer: http://etherscan.io
  * Ethereum Network status and statistics: https://ethstats.net/
  * Solidity online Documentation: http://solidity.readthedocs.io
- * Solidity PDF documentation: https://media.readthedocs.org/pdf/solidity/latest/solidity.pdf 
+ * Solidity PDF documentation: https://media.readthedocs.org/pdf/solidity/latest/solidity.pdf
 
-Solidity
---------
+Solidity - tutorials and notes
+------------------------------
  * https://medium.com/@ConsenSys/a-101-noob-intro-to-programming-smart-contracts-on-ethereum-695d15c1dab4#.6ht60i8gr
+
+ * https://dappsforbeginners.wordpress.com/tutorials/two-party-contracts/
 
  * https://learnxinyminutes.com/docs/solidity/
 
