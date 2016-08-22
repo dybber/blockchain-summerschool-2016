@@ -13,6 +13,29 @@
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows}
 
+\usepackage{listings}
+\lstdefinelanguage{Solidity}{
+  alsoletter={.},
+  morekeywords={contract, function, modifier, this, new, struct, mapping,
+                if, then, else, throw, return, true, false, delete,
+                storage, memory, constant, internal, protected, private, public,
+                address, int, uint, uint128, uint256, bool, string,
+                bytes, bytes1, bytes2, bytes4, bytes8, bytes16, bytes32,
+                msg.sender, msg.value, now, msg.gas, msg.data, msg.sig, tx.gasprice
+                tx.origin, block.coinbase, block.difficulty, block.gaslimit,
+                block.number, block.timestamp, block.blockhash},
+  sensitive=true,
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/},
+  morestring=[b]",
+}
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  keywordstyle=\bfseries,
+  captionpos=b,
+  language=Solidity
+}
+
 
 
 \title{Tradeable Certificates of Title on a blockchain \\
@@ -340,6 +363,7 @@ This process is risky for on both the seller and the buyer.
 \end{itemize}
 
 \section{Trading on the blockchain}
+\label{sec:trading_on_blockchain}
 We will now describe how a blockchain solution might solve these trust
 issues between the seller and the buyer. When a blockchain is used,
 the Vehicle Title might be stored as an \emph{updateable} contract
@@ -403,19 +427,149 @@ trading contracts.
 
 \chapter{Implementation}
 \label{sec:implementation}
+As mentioned in the end of Section \ref{sec:trading_on_blockchain},
+the vehicle trading problem can be generalised to trading any contract
+on the blockchain. We have implemented a prototype allowing such
+trades through a user selected intermediary which is also represented
+as a contract. Each intermediary is specialised to holding values of a
+certain currency (a certain token type).
 
+To create a tradeable contract, the user creates a contract deriving
+from the contract \texttt{BaseTradeable} shown in Figure
+\ref{fig:tradeable}, and extends it with its own logic. In our case we
+could create a contract \texttt{VehicleTitle} which extends on
+\texttt{BaseTradeable} by also registering the Vehicle Identification
+Number (VIN), the registration number (number plates), accident
+history, owner history and so on, as well as allowing the various
+parties (e.g. insurance company) to update the contract when new
+information is available.
 
-\section{Experience using Ethereum}
-\todo{Describe how horrible the development environment is, how bad the
-documentation is, and how terrible the error messages are.}
+If we want \emph{all} car sales to go through the Danish Motor
+Registry, we could create a special intermediary-contract, as the sole
+allowed intermediary when selling cars registered in Denmark. This
+requirement would thus be part of the contract
+\texttt{VehicleTitle}. However, an alternative approach is to allow
+any contract to listen for the event that a car has been sold. In this
+way the taxation authority can step back, and only monitor all
+\texttt{VehicleTransfer} events, without being an involved participant
+in car sales. When they need to levy ownership taxes, they can look up
+in their database in see exactly who owned which vehicle when.
 
-\todo{Mention that Ethereum currently is good for prototyping, nothing else. }
+\begin{figure}
+%\todo{add VehicleTransfer event}
+\begin{lstlisting}
+contract BaseTradeable {
+  address owner;
+  address intermediary = 0;
+  address receiver     = 0;
 
-\todo{Eventually a better language than Solidity may be introduced, but
-currently not a good platform for any serious projects.}
+  function BaseTradeable () {
+    owner = msg.sender;
+  }
 
-\todo{Mention Certified contract languages, such as the work by Tom
-  Hvitved or Patrick Bahr.}
+  // Issue an offer through a given intermediary  
+  function makeOffer (address _intermediary,
+                      address buyer, uint256 amount)
+  only(owner) notForSale {
+    Intermediary i = Intermediary(intermediary);
+    intermediary = _intermediary;
+    receiver = buyer;
+    i.receiveOffer(this, owner, buyer, amount);
+  }
+
+  // Called by intermediary if the sale i cancelled
+  function saleCancelled () only(intermediary) forSale {
+    intermediary = 0;
+    receiver = 0;
+  }
+  // Called by intermediary to transfer ownership
+  function transferContract () only(intermediary) {
+    owner = receiver;
+  }
+  ...
+}
+\end{lstlisting}
+
+\caption{Tradeable contract (modifiers not shown)}
+\label{fig:tradeable}
+\end{figure}
+
+\begin{figure}
+  \begin{lstlisting}
+contract Intermediary {
+  // Select token-currency on creation
+  function Intermediary(Token currency) {  }
+
+  // Seller makes an offer to a buyer
+  function receiveOffer(address theContract, address seller,
+                        address buyer, uint256 amount) only(buyer) { }
+
+  // Buyer approves by transferring funds to the intermediary.
+  function receiveApproval(address from, uint256 value,
+                           address token, address theContract) only(from) {}
+
+  // Seller revokes an offer.
+  // If the buyer has paid, his money is transferred back
+  function revokeOffer(address theContract) isSellerOf(theContract) {}
+  
+  // Buyer approves. Goods are received.
+  function completeTransaction(address theContract) isBuyerOf(theContract) {}
+
+  // Buyer aborts the transaction. Goods are not received
+  function abortTransaction(address theContract) isBuyerOf(theContract) {}
+}
+  \end{lstlisting}
+  \caption{Intermediary interface}
+  \label{fig:intermediary}
+\end{figure}
+
+\chapter{Experience using Ethereum}
+\label{sec:ethereum-experiences}
+As mentioned, we used the Ethereum platform for building this
+prototype. We want to report on our experiences using the platform,
+and whether continued development of a new Danish Motor Registry on
+Ethereum is worthwhile. 
+
+From a user perspective the Ethereum blockchain and wallet application
+are easy to install and easy to use for trading Ether. However, as a
+developer, the platform still has many shortcomings. The documentation
+of both Solidity language and the App-development frameworks Truffle
+and Embark are seriously lacking. Good testing and debugging tools are
+missing and the Solidity compilers error messages are poor.
+
+Another aspect entirely is the language Solidity. Solidity is based on
+object-oriented principles, and in many ways seems inspired by
+JavaScript. This makes contracts and transactions hard to reason
+about. Here are some of the problems, anti-patterns and weird design
+decisions we encountered using Solidity:
+\begin{itemize}
+\item Certain types are not checked by the type checker. \todo{which, and where? Something with \texttt{address}}
+\item Modifiers needs a \texttt{\_} character. This is not checked by
+  the compiler. A runtime error occurs.
+\item A method accepting an instance of class C, must still be casted
+  to class C before use (see the first line in the function
+  \texttt{makeOffer}, Figure \ref{fig:tradeable})
+\item Exceptions does not carry a reason. All exceptions look the same.
+\item You can not catch exceptions.
+\item A special noname function is needed \texttt{function () \{ throw; \}} to return funds
+\item Class-dependencies can be cyclic, but only if your classes are
+  all in the same file.
+\end{itemize}
+
+Eventually a better language than Solidity may be introduced, but we
+will currently not recommend Ethereum as a platform for any serious
+projects. Research in alternative contract language is ongoing, and
+have been a topic in programming language research even before the
+Bitcoin brought blockchains to the table. Using certified contract
+languages, such as \cite{hvitved2011contract} for ERP systems or
+\cite{bahr2015certified} for financial contracts, the compiler can
+help us limit the contract we can write (e.g. to avoid runtime errors)
+and analyse our contracts for correctness.
+
+In short, our conclusion is that Ethereum currently is not a stable
+enough platform for anything except prototypes. Ethereum is still are
+young project, and better development tools and contract languages
+will hopefully arrive.
 
 \chapter{User experience design}
 \todo{Contracts should be tied to NemID or Corporate ID.}
@@ -429,13 +583,30 @@ currently not a good platform for any serious projects.}
 
 \chapter{Future work}
 \label{sec:futurework}
+Further questions remain to be answered before a blockchain system for
+the Danish Motor Registry can be implemented.
 
-\begin{itemize}
-\item Proof of work, proof of stake, proof of space?
-\item Can a system built now, be migrated to another system?
-\item How much should be stored off the blockchain?
-\item Prospect of using a more formaly defined contract specification language
-\end{itemize}
+Using a blockchain solution depending on the resource wasteful
+Proof-of-Work scheme will probably not create positive headlines for
+the Danish Tax Agency. Further experience with alternative consensus
+mechanisms is thus necessary.
+
+Any IT system will need to be updated over time as new legislation and
+new products arise. The question of how a blockchain system can be
+updated is thus pertinent. For example, how could we add a new type
+information to all existing Vehicle Title contracts, or incorporate a
+new rule that in some way limits the sales of vehicles (e.g. special
+requirement on exhaustion filters).
+
+Another aspect is how much data should really be stored on the
+blockchain. Should we use an alternative peer-to-peer system, such as
+IPFS, to store photos of cars or not-yet digitalised documents? Or is
+it feasible to store on the blockchain?
+
+As mentioned in Section \ref{sec:ethereum-experiences} it would also
+be interesting to see whether we could express the same logic in a
+more secure contract language like CSL \cite{hvitved2011contract}, and
+how such a contract language can be compiled to Ethereum bytecode.
 
 \chapter{Conclusion}
 \label{sec:conclusion}
