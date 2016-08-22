@@ -1,9 +1,10 @@
 \documentclass[oneside,a4paper,10pts,article]{memoir}
 
-
 \usepackage{palatino}
 \usepackage{graphicx}
 \usepackage{todonotes}
+\presetkeys{todonotes}{inline}{}
+
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows}
 
@@ -78,7 +79,8 @@ and \ref{sec:conclusion} we describe future prospects and conclude.
 
 \chapter{Blockchain}
 \label{sec:blockchain}
-\cite{beck2016blockchain}
+
+\todo{\cite{beck2016blockchain}}
 
 Blockchain technology originates from the technology behind the
 Bitcoin crypto-currency \cite{bitcoin}, where it is used to avoid the
@@ -132,43 +134,98 @@ double-spending impossible without a third party.
 
 Essentially what is needed, is that a majority of the nodes in the
 distributed network agrees on the same course of events. One might
-attempt doing this by a majority vote, where
+attempt doing this by a majority vote, where each user has one
+vote. This will however not work without a central system registering
+the active users. In a open distributed system, nodes can join and
+leave the system at any time, and we thus have no way of determining
+the total number of voters, and we will never be able to determine
+when a majority has been reached.  The vote has to decided by other
+means than a simple count.
 
 \section{Consensus by Proof-of-Work}
 In the original Bitcoin system and in most current blockchain systems,
-reaching consensus on a single history of transactions is done by ....
+reaching consensus on a single history of transactions is done by
+voting using CPU-power, where nodes have to solve a computationally
+hard challenge, to add a new block of transactions to the chain. The
+approach is called Proof-of-Work (PoW), and before Bitcoin it was suggested
+as an approach to combat spam emails \cite{dwork1992pricing}.
 
-\cite{dwork1992pricing}
+To exemplify, consider the system employed by Bitcoin. An additional
+field is added to the block and the nodes have to find a specific
+value for this field, such that the entire block's hash has a certain
+number of leading zero bits. The difficulty increases exponentially in
+the number of zero bits, and difficulty can thus be adjusted over
+time. The verification process is cheap however, as it only amounts to
+do a hash over a single block.
+
+When a node finds a solution for a block, he broadcasts the new block
+to all other nodes, which verify his solution. To accept the solution,
+they start working on a solution for the next block. If the enemy
+wants to add fraudulent transactions to the chain, he will have to
+control more than 50\% of the CPU-power in the network, otherwise the
+majority will solve and verify other blocks before him.
+
+\todo{longest chain}
 
 \section{Consensus by Proof-of-Space}
-Energy efficiency ... \cite{dziembowski2015proofs}
+A major problem with the Proof-of-work system, is the amount of energy
+such a scheme will consume. Several alternative consensus mechanisms
+has been suggested, to address the energy efficiency of the
+Proof-of-Work scheme. One such scheme is \emph{Proof-of-Space}
+\cite{dziembowski2015proofs}, where nodes instead will vote using disk
+space. All nodes will store a data structure ... and the challenge
+put up is no longer computational, but ...
 
 \section{Consensus by Proof-of-Stake}
-Alternatives to proof of work has been suggested, one such alternative
-is called Proof-of-Stake (PoS), originating from the
-Bitcoin-alternative called PPCoin \cite{king2012ppcoin}. 
+Another alternative is a scheme, where the voting power is distributed
+relative to the amount of wealth of the nodes (and for how long they
+have had the acquired wealth). This consensus scheme is called
+Proof-of-Stake, and originates from the Bitcoin-alternative called
+Peercoin or PPCoin \cite{king2012ppcoin}.
 
-Nothing at stake
+It has been suggested that Bitcoin moves to a Proof-of-Stake scheme,
+the scheme has however been criticised for its inability to hinder
+long-range attacks. In the Proof-of-Work scheme, it is virtually
+impossible to suggest changes to more than one or two blocks behind
+the current head, because of the enormous computing power
+necessary. In Proof-of-Stake however, attackers can start at any point
+in in the entire history of the blockchain, if they were wealthy
+enough at that point in time \cite{buterin2014onstake}. In that sense,
+Proof-of-Stake is not trustless, you especially have to trust that the
+nodes participating in the genesis of the chain will not create a
+different history of events.
 
-Proof-of-stake can not be trustless. Members of genesis block
-  allocation can always create an alternate fork. Long-range attacks.
-https://blog.ethereum.org/2014/07/05/stake/
+Another criticism is that individual nodes have
+\textit{nothing-at-stake}, in the sense that nodes have nothing to
+lose from voting on many different blockchain histories. When the
+incentive is lacking for working on only the longest chain, the vote
+might never be resolved.
 
 \section{Checkpointing}
-Introduced in Bitcoin in 2010 (see Peercoin paper)
+To resolve the problems of history-rewriting in Proof-of-Stake,
+checkpointing have suggested. No blockchain reorganization is allowed
+deeper than the last known checkpoint. Even though the Proof-of-Work
+scheme forced strong protection Bitcoin introduced checkpoints in 2010
+\cite{king2012ppcoin}. Using checkpoints also has the positive impacts
+that clients joining the network late, do only need to download the
+part of the chain from the last checkpoint and forward, unless they
+want to verify the entire history of events.
 
+Checkpointing in both Peercoin and Bitcoin is implemented using a
+centralized mechanism. In Bitcoin every release of Bitcoin software
+contains a new checkpoint. In Peercoin checkpoints are signed using
+the Peercoin developer's private key and broadcasted.
 
-\section{Inherent limitations}
+\section{Consistency, availability and partition tolerance}
+As per the CAP Theorem, no system can be both consistent, available
+and partition tolerant.
 
 \begin{itemize}
-\item https://download.wpsoftware.net/bitcoin/old-pos.pdf
-\item   ``Impossibility of Distributed Consensus with One Faulty Process''
+\item ``Impossibility of Distributed Consensus with One Faulty Process''
 \item Byzantine Generals' Problem
 \item Partition tolerancy and CAP Theorem
 \item Privacy and anonymity
 \end{itemize}
-
-
 
 
 \chapter{Case description}
