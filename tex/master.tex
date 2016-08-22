@@ -5,6 +5,8 @@
 \usepackage{todonotes}
 \presetkeys{todonotes}{inline}{}
 
+\usepackage[hidelinks,hyperindex]{hyperref}
+
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows}
 
@@ -79,9 +81,6 @@ and \ref{sec:conclusion} we describe future prospects and conclude.
 
 \chapter{Blockchain}
 \label{sec:blockchain}
-
-\todo{\cite{beck2016blockchain}}
-
 Blockchain technology originates from the technology behind the
 Bitcoin crypto-currency \cite{bitcoin}, where it is used to avoid the
 problem of double-spending in transaction systems. Previously,
@@ -227,45 +226,47 @@ and partition tolerant.
 \item Privacy and anonymity
 \end{itemize}
 
+\section{Ethereum}
+\todo{Describe ethereum design}
+\cite{buterin2013ethereum, wood2014ethereum}
 
+\todo{explain Ether currency}
+
+%\newpage
 \chapter{Case description}
 \label{sec:case}
-Registration of vehicles, collecting vehicle taxes, and interacting
-with other stakeholders, such as police, insurance companies and
-transport authorities, requires a lot of administration, and a lot of
-things can go wrong in process.
-
-SKAT provided us with thorough case description, as well as answering
-our questions regarding the Danish vehicle registration-process during
-the summer school.
+We will now describe the case presented by SKAT on the Danish Motor
+Registry. Registration of vehicles, collecting vehicle taxes, and
+interacting with other stakeholders, such as police, insurance
+companies and transport authorities, requires a lot of administration,
+and a lot of things can go wrong in process.
 
 \section{The life cycle of a vehicle}
 During the life cycle of vehicle, it goes through various owners and
 activities, and involves several different parties, such as car
-importers, police, insurance companies, MOT Testing companies and
+importers, police, insurance companies, MOT testing companies and
 transport authorities. When a car is imported into the country, it is
 registered as owned by the importer, which sells it to a specific
 dealer. The dealer then sells it to a private owner or a corporation,
 and the car can be re-sold multiple times. See Figure \ref{fig:lifecycle}.
 
-A crucial aspect is thus the change of ownership, which is registered
-in the Danish Motor Registry. Especially the current process enforced
-when trading used cars is problematic, as there is an imbalance of
-knowledge and trust between the seller and the buyer. The buyer might
-not know the full history of owners, accidents or repairs, and as the
-Vehicle Title is currently on paper, it might be forged or the car
-might be stolen. On the other hand, the seller has to put trust in the
-buyer, that he will in fact re-register the car in his own
-name. Currently, if the buyer does not immediately re-register the
-car, the sellers insurance might still be covering damages and the
-buyer could use the criminal activities, without being recorded as the
-owner of the car.
+A crucial aspect is the change of ownership. Especially the current
+process enforced when private citizens trade used cars is problematic,
+as there is an imbalance of knowledge and trust between the seller and
+the buyer. The buyer might not know the full history of owners,
+accidents or repairs, and as the Vehicle Title is currently on paper,
+it might be forged or the car might be stolen. On the other hand, the
+seller has to put trust in the buyer, that he will in fact re-register
+the car in his own name. Currently, if the buyer does not immediately
+re-register the car, the sellers insurance might still be covering
+damages and the buyer could use the criminal activities, without being
+recorded as the owner of the car.
 
-This means that activities such as MOT Test, repairs and accident
+This means that activities such as MOT test, repairs and accident
 reports are crucial for the buyer, and for the seller the
 re-registration should be a part of the shift of ownership.
 
-\begin{figure}
+\begin{figure} %[b]
   \centering
   \includegraphics[width=\textwidth]{lifecycle.png}
   \caption{Vehicle life cycle}
@@ -276,11 +277,11 @@ re-registration should be a part of the shift of ownership.
 Taxation-wise there are several places where the Tax Agency needs to
 be involved. When a car is imported, it has to be registered and a
 registration tax has to be paid, it does not matter whether the car is
-new or used. When a car shifts hands, the Tax Agency needs to know, as
-they collect a yearly ownership tax for car owners. Also, several fees
-can be levied as part of the process, for example a re-registration
-fee. It is also the Tax Agency's job to make sure that all registered
-cars are insured by their owner.
+new or used. A yearly ownership tax is also collected for car owners,
+and the Tax Agency thus also needs to know when a car is sold. Also,
+several fees can be levied as part of the process, for example a
+re-registration fee. It is also the Tax Agency's job to make sure that
+all registered cars are insured by their owner.
 
 \section{Core challenges}
 As outlined in the description above, the core challenges are:
@@ -296,55 +297,97 @@ As outlined in the description above, the core challenges are:
 
 \chapter{Trading contracts}
 \label{sec:trading}
-
-Now let us look at how such blockchain systems can be used the issues
+Now let us look at how blockchain systems can help mitigate the issues
 of the Danish Motor Registry. As described in Section \ref{sec:case},
 the main underlying challenge is the transfer of ownership between a
 seller and a buyer. This ownership is represented by a contract, a so
-called Certificate of Title or in the case of a vehicles, a Vehicle
-Title. Trading a vehicle, thus really means trading the Vehicle Title,
-stating who is the rightful owner. In this section we will describe
-the current process of such a trade, and we will describe how a
-blockchain solution, can mitigate most of the current problems.
+called \emph{Certificate of Title} or in the case of a vehicles, a
+\emph{Vehicle Title}. Trading a vehicle, thus really means trading the
+Vehicle Title, stating who is the rightful owner. In this section we
+will describe the current process of such a trade, and we will
+describe how a blockchain solution, can mitigate most of the current
+problems.
 
-\todo{describe how a contract is traded today}
+\section{Trading vehicles today}
+The current process of trading a car between two persons
+(private-to-private), is as follows:
+
+\begin{enumerate}
+\item Buyer inspects the condition of the car
+\item Seller and buyer agrees on a price
+\item Seller hands the registration certificate to the buyer. Buyer
+  transfers the agreed amount of money to the sellers bank account.
+\item When the money is received, the seller hands the car keys to buyer.
+\item The buyer goes to \url{http://motorregister.skat.dk} and
+  re-registers the car in his name.
+\end{enumerate}
+This process is risky for on both the seller and the buyer.
+\begin{itemize}
+\item The seller must trust that the buyer performs Step 5. The seller
+  risks that levies will continue to be collected from him, not the
+  new owner. The seller also risks that the buyer uses the car illegal
+  activities or is involved in accident while the car is still insured
+  by the seller.
+\item In Step 3, The buyer has no way to verify that the registration
+  certificate is correct. There is a risk that there is hidden debt in
+  the car, that the car is stolen or that the car has been through
+  major repairs.
+\end{itemize}
+
+\section{Trading on the blockchain}
+We will now describe how a blockchain solution might solve these trust
+issues between the seller and the buyer. 
 
 \todo{describe how a contract might be traded using blockchain}
 
 
 This can be generalized, and instead talking about the specific case
-of trading a vehicle, we can use the same framework for trading any
-contract.
-
+of trading a vehicle, we can use the same framework for trading
+\textit{any} contract that can be represented on the blockchain.
 
 \chapter{Representing non-crypto currencies}
 \label{sec:currency}
-Describe that we assume a central bank will be willing to issue a
-token contract, such that owners of Tokens on the blockchain can
-convert such tokens back to actual danish kroner.
+An orthogonal issue, to the issue of trading contracts, is the
+question of how non-crypto currencies, like Euro or Danish Kroner
+(DKK) should be represented on a blockchain. We want to support trades
+which are not settled in Bitcoin or Ether, but on our current
+financial markets. One approach is to go through an exchange and
+exchange Euro or DKK for Ether whenever a sale is performed, this
+however incurs overhead of exchange rates and potential fees.
+
+Another possibility is to represent these currencies as
+\textit{tokens} on the blockchain. \todo{explain token}
+
+To do this, we have to assume that a trusted third-party will allow
+conversion back and forth between Danish Kroner and block-chain
+tokens. This third-party could be the Danish Central Bank or a major
+privately owned bank. Currently most transactions are already only
+represented digitally, and such a conversion will thus be a matter of
+conversion from the current database-representation to a blockchain
+\emph{token}-representation. In the rest of the paper we assume that
+such a trusted third-party exists, and we use tokens as currency when
+trading contracts.
 
 \chapter{Implementation}
 \label{sec:implementation}
 
-\section{Ethereum}
-\cite{buterin2013ethereum, wood2014ethereum}
 
 \section{Experience using Ethereum}
-Describe how horrible the development environment is, how bad the
-documentation is, and how terrible the error messages are.
+\todo{Describe how horrible the development environment is, how bad the
+documentation is, and how terrible the error messages are.}
 
-Mention that Ethereum currently is good for prototyping, nothing else. 
+\todo{Mention that Ethereum currently is good for prototyping, nothing else. }
 
-Eventually a better language than Solidity may be introduced, but
-currently not a good platform for any serious projects.
+\todo{Eventually a better language than Solidity may be introduced, but
+currently not a good platform for any serious projects.}
 
-Mention Certified contract languages, such as the work by Tom Hvitved
-or Patrick Bahr.
+\todo{Mention Certified contract languages, such as the work by Tom
+  Hvitved or Patrick Bahr.}
 
 \chapter{User experience design}
-NemID
+\todo{NemID}
 
-Describe process suggested in Mockup-app from SKAT.
+\todo{Describe the entire process suggested in Mockup-app from SKAT.}
 
 \chapter{Future work}
 \label{sec:futurework}
@@ -358,6 +401,10 @@ Describe process suggested in Mockup-app from SKAT.
 
 \chapter{Conclusion}
 \label{sec:conclusion}
+
+\todo{\cite{beck2016blockchain}}
+
+
 
 \bibliographystyle{plain}
 \bibliography{bibliography}
