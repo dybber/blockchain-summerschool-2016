@@ -5,10 +5,15 @@
 \usepackage{todonotes}
 \presetkeys{todonotes}{inline}{}
 
+\usepackage{url}
 \usepackage[hidelinks,hyperindex]{hyperref}
+
+\captionnamefont{\bfseries}
 
 \usepackage{tikz}
 \usetikzlibrary{positioning,arrows}
+
+
 
 \title{Tradeable Certificates of Title on a blockchain \\
  {\normalfont\normalsize\scshape A case study on a trust-free vehicle registry}
@@ -227,7 +232,7 @@ and partition tolerant.
 \end{itemize}
 
 \section{Ethereum}
-\todo{Describe ethereum design}
+\todo{Describe the Ethereum platform}
 \cite{buterin2013ethereum, wood2014ethereum}
 
 \todo{explain Ether currency}
@@ -244,23 +249,23 @@ and a lot of things can go wrong in process.
 \section{The life cycle of a vehicle}
 During the life cycle of vehicle, it goes through various owners and
 activities, and involves several different parties, such as car
-importers, police, insurance companies, MOT testing companies and
+importers, police, insurance companies, MOT testing centers and
 transport authorities. When a car is imported into the country, it is
 registered as owned by the importer, which sells it to a specific
 dealer. The dealer then sells it to a private owner or a corporation,
 and the car can be re-sold multiple times. See Figure \ref{fig:lifecycle}.
 
-A crucial aspect is the change of ownership. Especially the current
-process enforced when private citizens trade used cars is problematic,
-as there is an imbalance of knowledge and trust between the seller and
-the buyer. The buyer might not know the full history of owners,
-accidents or repairs, and as the Vehicle Title is currently on paper,
-it might be forged or the car might be stolen. On the other hand, the
-seller has to put trust in the buyer, that he will in fact re-register
-the car in his own name. Currently, if the buyer does not immediately
-re-register the car, the sellers insurance might still be covering
-damages and the buyer could use the criminal activities, without being
-recorded as the owner of the car.
+A crucial aspect is the change of ownership through the supply chain
+and between private persons. Especially the current process of private
+car trade is problematic, as there is an imbalance of knowledge and
+trust between the seller and the buyer. The buyer might not know the
+full history of owners, accidents or repairs, and as the Vehicle Title
+is currently on paper, it might be forged or the car might be
+stolen. On the other hand, the seller has to put trust in the buyer,
+that he will in fact re-register the car in his own name. Currently,
+if the buyer does not immediately re-register the car, the sellers
+insurance might still be covering damages and the buyer could use the
+criminal activities, without being recorded as the owner of the car.
 
 This means that activities such as MOT test, repairs and accident
 reports are crucial for the buyer, and for the seller the
@@ -336,14 +341,42 @@ This process is risky for on both the seller and the buyer.
 
 \section{Trading on the blockchain}
 We will now describe how a blockchain solution might solve these trust
-issues between the seller and the buyer. 
+issues between the seller and the buyer. When a blockchain is used,
+the Vehicle Title might be stored as an \emph{updateable} contract
+\emph{on} the blockchain. By doing this the blockchain network agrees
+on this contract as valid and we can trust its content. We can limit
+whom may issue new Vehicle Titles to for example SKAT or MOT test
+centers. 
 
-\todo{describe how a contract might be traded using blockchain}
+In addition to carrying information identifying the actual car, the
+contract may also be updated with police reports, MOT test outcomes,
+insurance information and so on, which the buyer might be interested
+in.
 
+When a contract changes hands, it changes hands immediately, and SKAT
+as well as insurance companies are notified immediately. By making the
+money transfer and the change of ownership in the contract part of the
+same transaction, we also protect the seller from the risks described
+above. The fact that a new owner is recorded in the contract, is what
+counts as re-registration. No additional re-registration is
+necessary.
 
-This can be generalized, and instead talking about the specific case
-of trading a vehicle, we can use the same framework for trading
-\textit{any} contract that can be represented on the blockchain.
+We have illustrated the transaction process of trading a vehicle using
+the blockchain in Figure \ref{fig:shift-of-ownership}.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=\textwidth]{shift-of-ownership.pdf}
+  \caption{Transaction process for shift of ownership.}
+  \label{fig:shift-of-ownership}
+\end{figure}
+
+The problems described here are not only found in trades involving
+cars. The same type of risks arise when selling or buying a house. In
+fact, this blockchain scheme can be generalised, and we can build a
+general framework for trading \textit{any} contract that can be
+represented on the blockchain. We present such a framework implemented
+in Ethereum in Section \ref{sec:implementation}.
 
 \chapter{Representing non-crypto currencies}
 \label{sec:currency}
@@ -385,9 +418,14 @@ currently not a good platform for any serious projects.}
   Hvitved or Patrick Bahr.}
 
 \chapter{User experience design}
-\todo{NemID}
+\todo{Contracts should be tied to NemID or Corporate ID.}
 
 \todo{Describe the entire process suggested in Mockup-app from SKAT.}
+
+\todo{IoT}
+
+\todo{users should trust blockchain technology, as the actual
+  contracts are now on the blockchain}
 
 \chapter{Future work}
 \label{sec:futurework}
@@ -406,7 +444,7 @@ currently not a good platform for any serious projects.}
 
 
 
-\bibliographystyle{plain}
+\bibliographystyle{plainurl}
 \bibliography{bibliography}
 
 
