@@ -505,14 +505,20 @@ exchange Euro or DKK for Ether whenever a sale is performed, this
 however incurs overhead of exchange rates and potential fees.
 
 Another possibility is to represent these currencies as
-\textit{tokens} on the blockchain. \todo{explain token}
+\textit{tokens} on Ethereum. In Ethereum the concept of token is a
+standardized way to represent coins, or other fungible goods, such as
+representing membership. In Ethereum it is implemented as a single
+contract which manages a list of who owns which token.
 
-To do this, we have to assume that a trusted third-party will allow
-conversion back and forth between Danish Kroner and block-chain
-tokens. This third-party could be the Danish Central Bank or a major
-privately owned bank. Currently most transactions are already only
-represented digitally, and such a conversion will thus be a matter of
-conversion from the current database-representation to a blockchain
+With such a token contract we could make 1 token equal to 1 Øre (0.01
+Kroner), and users should then be able to trade in actual danish
+kroner for such tokens. To do this, we have to assume that a trusted
+third-party will allow such a conversion back and forth between Danish
+Kroner and block-chain tokens. This third-party could be the Danish
+Central Bank or a major privately owned bank. Currently most
+transactions are already only represented digitally, and such a
+conversion will thus be a matter of conversion from the current
+database-representation to a blockchain
 \emph{token}-representation. In the rest of the paper we assume that
 such a trusted third-party exists, and we use tokens as currency when
 trading contracts.
@@ -635,15 +641,14 @@ JavaScript. This makes contracts and transactions hard to reason
 about. Here are some of the problems, anti-patterns and weird design
 decisions we encountered using Solidity:
 \begin{itemize}
-\item Certain types are not checked by the type checker. \todo{which, and where? Something with \texttt{address}}
+\item Exceptions does not carry a reason. All exceptions look the same.
+\item You can not catch exceptions.
+\item A special noname function is needed \texttt{function () \{ throw; \}} to return funds
 \item Modifiers needs a \texttt{\_} character. This is not checked by
   the compiler. A runtime error occurs.
 \item A method accepting an instance of class C, must still be casted
   to class C before use (see the first line in the function
   \texttt{makeOffer}, Figure \ref{fig:tradeable})
-\item Exceptions does not carry a reason. All exceptions look the same.
-\item You can not catch exceptions.
-\item A special noname function is needed \texttt{function () \{ throw; \}} to return funds
 \item Class-dependencies can be cyclic, but only if your classes are
   all in the same file.
 \end{itemize}
@@ -651,7 +656,7 @@ decisions we encountered using Solidity:
 Eventually a better language than Solidity may be introduced, or
 Solidity might improve over time. A framework for formal verification
 of Solidity programs has been presented, where users can prove various
-properties about contracts \cite{bhargavanshort}.
+properties about contracts \cite{bhargavanshort}. 
 
 Research in alternative contract languages is ongoing, and have been a
 topic in programming language research even before the Bitcoin brought
@@ -668,37 +673,51 @@ enough platform for anything except prototypes. Ethereum is still are
 young project, and better development tools and contract languages
 will hopefully arrive.
 
-\chapter{User experience design}
-\todo{Describe participants/actors: who are the users?}
+% \chapter{User experience design}
+% SKAT provided us with a complete prototype of the user interface in an
+% app used for private-private car sales. We will not go into more
+% detail with that here, but just refer the reader to try it out here:
+% \url{}
 
-\todo{Contracts should be tied to NemID or Corporate ID.}
+% In addition to the steps necessary for trading a car between two
+% private parties, it is also int
 
-\todo{Describe the entire process suggested in Mockup-app from SKAT.}
+% \todo{Describe participants/actors: who are the users?}
 
-\todo{IoT, Immobilisers in cars}
+% \todo{Contracts should be tied to NemID or Corporate ID.}
 
-\todo{users should trust blockchain technology, as the actual
-  contracts are now on the blockchain}
+% \todo{Describe the entire process suggested in Mockup-app from SKAT.}
+
+% \todo{IoT, Immobilisers in cars}
+
+% \todo{users should trust blockchain technology, as the actual
+%   contracts are now on the blockchain}
 
 \chapter{Future work}
 \label{sec:futurework}
 Further questions remain to be answered before a blockchain system for
-the Danish Motor Registry can be implemented.
-
-First and foremost, the reasons for choosing a blockchain system must
-be exactly clear. Several design choices can be made, and to decide
-more knowledge about the motivation for abandoning traditional systems
-are necessary. 
+the Danish Motor Registry can be implemented.  First and foremost, the
+reasons for choosing a blockchain system must be exactly
+clear. Several design choices can be made, and to decide more
+knowledge about the motivation for abandoning traditional systems are
+necessary.
 
 A blockchain solution might be run publicly or privately, but when run
 privately it is in essence ``just'' another kind of shared
 database. Running a private blockchain might still make sense if a lot
 of parties, or competing parties, needs to agree on the same history
-of events. We need to understand the privacy requirements and how the
-different parties interact with the Motor Registry, to decide between
-a public blockchain (such as Ethereum), a privately run blockchain, a
-traditional centralized system using a federated database
-architecture.
+of events. There however has to be a trust issue between the parties,
+otherwise solutions based on regular distributed databases might be
+more appropriate (e.g. federated databases, replicated logs). 
+
+We need to understand the privacy requirements and how the different
+parties interact with the Motor Registry, to decide between a public
+blockchain (such as Ethereum), a privately run blockchain, a
+traditional centralized system using some kind of distributed database
+architecture. Another alternative is a public blockchain, but where
+public-key encryption is used to hide confidential information. In
+this way mining can be done by outsiders, while keeping the
+information secure.
 
 Using a blockchain solution depending on the resource wasteful
 Proof-of-Work scheme will probably not create positive headlines for
@@ -710,28 +729,41 @@ Any IT system will need to be updated over time as new legislation and
 new products arise. The question of how a blockchain system can be
 updated is thus pertinent. For example, how could we add a new type
 information to all existing Vehicle Title contracts, or incorporate a
-new rule that in some way limits the sales of vehicles.
+new rule that in some way limits the sales of vehicles. This needs to
+be considered before such a system is implemented, as old contracts on
+the blockchain might need to have a built-in ``upgrade''-routine.
 
 Another aspect is how much data should really be stored on the
-blockchain. Should we use an alternative peer-to-peer system, such as
-IPFS, to store photos of cars or not-yet digitalised documents? Or is
-it feasible to store on the blockchain?
+blockchain. Storage in Ethereum is costly, as this increases the
+transaction costs, thus with the current model, it would probably be
+better to store larger files (e.g. photos of cars) off chain,
+e.g. using a peer-to-peer system such as IPFS.
 
 As mentioned in Section \ref{sec:ethereum-experiences} it would also
 be interesting to see whether we could express the same logic in a
 more secure contract language like CSL \cite{hvitved2011contract}, and
 how such a contract language can be compiled to Ethereum bytecode.
 
+Many cars today are already produced with a so called
+\textit{immobiliser}, which prevents the engine from running without
+the correct key present. Such keys could be digitised and stored as
+part of the contract on the blockchain.
+
 \chapter{Conclusion}
 \label{sec:conclusion}
+Blockchain technology is in early stage development, many questions
+still needs further research, before large scale systems are
+built. Especially two areas the community has not settled for a
+standard practice: consensus mechanisms and contract programming
+languages. The future will tell which mechanisms and languages will
+win, further research might be necessary.
 
-* Blockchain is in early stage development, many questions still needs
-further research.
-
-  - consensus mechanisms
-  - contract languages and verification
-
-
+Blockchain technology is however already used for certain Certificate
+of Title registries. Two examples are the
+Bitland\footnote{http://bitlandglobal.com/} which tracks land and
+property ownership in Ghana and
+Everledger\footnote{http://everledger.io/}, which tracks diamond
+ownership.
 
 \bibliographystyle{plainurl}
 \bibliography{bibliography}
