@@ -40,16 +40,12 @@
 
 \title{Trading Certificates of Title as Smart Properties on a blockchain \\
   {\normalfont\normalsize\scshape A case study on a trust-free vehicle
-    registry using Ethereum} } \author{Martin Dybdal
+    registry using Ethereum} } \author{Martin Dybdal \\
   \texttt{dybber@dybber.dk}} \date{\today}
 
 \begin{document}
 
 \maketitle
-
-\begin{abstract}
-  
-\end{abstract}
 
 \chapter{Preface}
 This report was written as part of the ``Blockchain Summer School
@@ -225,8 +221,7 @@ space. In such schemes, all nodes store a large data structure
 locally. The challenge used for voting is then not computational like
 in Proof-of-Work, but instead done by performing disk-lookups. If the
 node can answer on random challenges about what element is located at
-different positions in the data structure, it can be verified that
-they indeed have invested in storage-resources.
+different positions in the data structure, proof of space can verified.
 
 Such a scheme does not incur the same energy overhead as
 Proof-of-work, as the main part of the work in Proof-of-Space schemes
@@ -242,7 +237,11 @@ Another alternative is a scheme, where the nodes votes by transferring
 content through a data-network. E.g. handling ordinary data traffic in
 the network. The more data you can transfer, the more voting
 power. This scheme is called Proof-of-bandwidth and was originally
-suggested for the Tor-network \cite{ghosh2014torpath}.
+suggested for the Tor-network \cite{ghosh2014torpath}. Nodes can not
+be trusted to report correct bandwidth contributions, thus a
+trust-free system for bandwidth measurement is necessary. A
+distributed algorithm for doing so is EigenSpeed
+\cite{snader2009eigenspeed}.
 
 \subsection{Consensus by Proof-of-Stake}
 The final alternative we will mention distributes voting power
@@ -455,9 +454,7 @@ We will now describe how a blockchain solution might solve these trust
 issues between the seller and the buyer. When a blockchain is used,
 the Vehicle Title might be stored as an \emph{updateable} contract
 \emph{on} the blockchain. By doing this the blockchain network agrees
-on this contract as valid and we can trust its content. We can limit
-whom may issue new Vehicle Titles to for example SKAT or MOT test
-centers. 
+on this contract as valid and we can trust its content.
 
 In addition to carrying information identifying the actual car, the
 contract may also be updated with police reports, MOT test outcomes,
@@ -482,6 +479,12 @@ the blockchain in Figure \ref{fig:shift-of-ownership}.
   \label{fig:shift-of-ownership}
 \end{figure}
 
+The initial contract will be created by the car factory, and at every
+step through the supply-chain the car will be traded, and ownership
+updated. Alternatively, we can wait and only associate contracts with
+cars as soon as they enter the country, and limit whom may issue new
+Vehicle Titles to SKAT or MOT test centers.
+
 The problems described here are not only found in trades involving
 cars. The same type of risks arise when selling or buying a house. In
 fact, this blockchain scheme can be generalised, and we can build a
@@ -489,10 +492,37 @@ general framework for trading \textit{any} contract that can be
 represented on the blockchain. We present such a framework implemented
 in Ethereum in Section \ref{sec:implementation}.
 
-% \section{Trading secrets}
-
 % \todo{trading secrets, e.g. a private key}
 % \todo{Certcoin https://eprint.iacr.org/2014/803.pdf}
+
+\section{Identifying physical objects}
+In a property registry it is crucial that properties are completely
+identifiable. This is usually also done using a trusted third-party as
+well as tagging the object, for example through a serial number
+(e.g. Vehicle Identification Number). In a blockchain solution, such a
+serial number might be added as an electronic tag. However, just as
+with ordinary serial numbers, such a tag might be tampered with and
+disputes might still need to be settled outside the blockchain in such
+situtations. MOT test sites might constitute the trusted third party,
+who verifies such tags every few years.
+
+\section{User authentication}
+Just as essential as identifying the physical object mentioned in
+contract, is associating information about the actual human owner of
+the property. 
+
+In the Bitcoin system, it is often seen as a feature that users are
+not authenticated. Coins are associated with a wallet address (a hash
+of the public-key in a public/private keypair). If you loose the
+keypair associated with that wallet address, you essentially loose the
+coins associated with it, and they can never be reclaimed.
+
+To authenticate users, a trusted third party is again necessary. In
+Denmark NemID might be used (governmental digital identification
+system). Alternatively, a system such as
+Keybase\footnote{https://keybase.io/} might be used, where users prove
+their identity through Social media accounts (e.g. by posting a key in
+a Twitter message).
 
 \chapter{Representing non-crypto currencies}
 \label{sec:currency}
@@ -638,29 +668,35 @@ missing and the Solidity compilers error messages are poor.
 Another aspect entirely is the language Solidity. Solidity is based on
 object-oriented principles, and in many ways seems inspired by
 JavaScript. This makes contracts and transactions hard to reason
-about. Here are some of the problems, anti-patterns and weird design
-decisions we encountered using Solidity:
-\begin{itemize}
-\item Exceptions does not carry a reason. All exceptions look the same.
-\item You can not catch exceptions.
-\item A special noname function is needed \texttt{function () \{ throw; \}} to return funds
-\item Modifiers needs a \texttt{\_} character. This is not checked by
-  the compiler. A runtime error occurs.
-\item A method accepting an instance of class C, must still be casted
-  to class C before use (see the first line in the function
-  \texttt{makeOffer}, Figure \ref{fig:tradeable})
-\item Class-dependencies can be cyclic, but only if your classes are
-  all in the same file.
-\end{itemize}
+about. Transaction logic might be split between multiple contract
+objects, and what would constitute a single contract on paper might be
+spread across multiple contract objects in Solidity. Contracts whether
+written in natural language or digital code should be easy to
+comprehend, and easy to verify. For example, it is necessary to verify
+that no transaction history can provoke an ill-defined state.
 
+% Here are some of the problems, anti-patterns and weird design
+% decisions we encountered using Solidity:
+% \begin{itemize}
+% \item Exceptions does not carry a reason. All exceptions look the same.
+% \item You can not catch exceptions.
+% \item A special noname function is needed \texttt{function () \{ throw; \}} to return funds
+% \item Modifiers needs a \texttt{\_} character. This is not checked by
+%   the compiler. A runtime error occurs.
+% \item A method accepting an instance of class C, must still be casted
+%   to class C before use (see the first line in the function
+%   \texttt{makeOffer}, Figure \ref{fig:tradeable})
+% \item Class-dependencies can be cyclic, but only if your classes are
+%   all in the same file.
+% \end{itemize}
 Eventually a better language than Solidity may be introduced, or
 Solidity might improve over time. A framework for formal verification
 of Solidity programs has been presented, where users can prove various
 properties about contracts \cite{bhargavanshort}. 
 
 Research in alternative contract languages is ongoing, and have been a
-topic in programming language research even before the Bitcoin brought
-blockchains to the table. Using certified contract languages, such as
+topic in programming language research even before blockchains was
+brought to the table. Using certified contract languages, such as
 \cite{hvitved2011contract} for ERP systems or \cite{bahr2015certified}
 for financial contracts, the compiler can help us limit the contract
 we can write (e.g. to avoid runtime errors), analyse our contracts for
